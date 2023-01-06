@@ -8,30 +8,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Core
 {
-    public class ConvertService
+    public class ConvertService : IConvertService
     {
-        public void Convert()
+        public Stream ConvertToStream(Stream docxStream)
         {
+            using WordprocessingDocument document = WordprocessingDocument.Open(docxStream, false);
 
-            GlobalFontSettings.FontResolver = new FontResolver();
+            return ConvertToStream(document);
+        }
 
-            var document = new PdfDocument();
-            var page = document.AddPage();
+        public Stream ConvertToStream(WordprocessingDocument docxDocument)
+        {
+            var stream = new MemoryStream();
+            var pdfDocument = Convert(docxDocument);
+            
+            pdfDocument.Save(stream);
 
-            var gfx = XGraphics.FromPdfPage(page);
-            var font = new XFont("Arial", 20, XFontStyle.Bold);
+            return stream;
+        }
 
-            var textColor = XBrushes.Black;
-            var layout = new XRect(20, 20, page.Width, page.Height);
-            var format = XStringFormats.Center;
+        public PdfDocument Convert(WordprocessingDocument docxDocument)
+        {
+            var generic = new GenerateService(docxDocument);
 
-
-            gfx.DrawString("Hello World!", font, textColor, layout, format);
-
-            document.Save(@"C:\Users\enner\Downloads\helloworld.pdf");
+            return generic.Generate();
         }
     }
 }
