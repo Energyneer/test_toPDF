@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 
